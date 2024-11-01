@@ -40,6 +40,17 @@
                     <option value="Critical">Critical</option>
                 </select>
             </div>
+            <div class="mb-4">
+                <label for="assigned_to" class="block text-sm font-medium text-gray-400">Assign To</label>
+                <select name="assigned_to" class="mt-1 block w-full rounded-md bg-gray-700 text-white border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">Own Task</option>
+                    @foreach ($users as $user)
+                        @if ($user->id !== Auth::id())
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
+            </div>            
             <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-md font-semibold shadow-md">Create Task</button>
         </form>
     </div>

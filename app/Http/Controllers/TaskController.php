@@ -4,6 +4,7 @@
 
     use App\Models\Task;
     use App\Models\ActivityLog;
+    use App\Models\User;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Auth;
 
@@ -11,7 +12,9 @@
     {
         public function index(Request $request)
         {
-            $query = Task::where('user_id', Auth::id());
+            $query = Task::with(['assignedUser', 'user']) // Eager load both assignedUser and user
+                ->where('assigned_to', Auth::id())
+                ->orWhere('user_id', Auth::id());
 
             if ($request->filled('name')) {
                 $query->where('name', 'like', '%' . $request->name . '%');
@@ -27,8 +30,10 @@
 
         public function create()
         {
-            return view('tasks.create');
+            $users = User::all();
+            return view('tasks.create', compact('users'));
         }
+
 
         public function store(Request $request)
         {
@@ -39,22 +44,21 @@
                 'end_date' => 'required|date|after_or_equal:start_date',
             ]);
 
+            $assignedTo = $request->input('assigned_to') ?? Auth::id();
+
             Task::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'user_id' => Auth::id(),
+                'assigned_to' => $assignedTo,
                 'priority' => $request->priority,
-            ]);
-
-            ActivityLog::create([
-                'user_id' => Auth::id(),
-                'description' => "🆕 Added new task '{$request->name}'",
             ]);
 
             return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
         }
+
 
         public function edit(Task $task)
         {
