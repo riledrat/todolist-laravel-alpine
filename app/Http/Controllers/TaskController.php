@@ -2,11 +2,13 @@
 
     namespace App\Http\Controllers;
 
+    use App\Events\TaskAssigned;
     use App\Models\Task;
     use App\Models\ActivityLog;
     use App\Models\User;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\Log;
 
     class TaskController extends Controller
     {
@@ -52,7 +54,7 @@
 
             $assignedTo = $request->input('assigned_to') ?? $this->userId;
 
-            Task::create([
+            $task = Task::create([
                 'name' => $request->name,
                 'description' => $request->description,
                 'start_date' => $request->start_date,
@@ -62,8 +64,12 @@
                 'priority' => $request->priority,
             ]);
 
+            Log::info('Pokretanje eventa TaskAssigned');
+            event(new TaskAssigned($task->name, $assignedTo)); // Prosledi korisnika kome je zadatak dodeljen
+
             return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
         }
+
 
         public function edit(Task $task)
         {
