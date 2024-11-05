@@ -8,67 +8,56 @@
     <div class="max-w-7xl mx-auto py-10 px-6">
         <!-- Welcome Message -->
         <div class="bg-gray-900 rounded-lg shadow-xl p-6 mb-8">
-            <h3 class="text-2xl font-semibold text-white mb-2">Welcome to Your Dashboard!</h3>
+            <h3 class="text-3xl font-bold text-white mb-2">Welcome to Your Dashboard!</h3>
             <p class="text-gray-300">
-                Here you can manage your tasks, track your progress, and get insights into your productivity.
+                Here you can manage your tasks, track your progress, and gain insights into your productivity.
             </p>
         </div>
 
         <!-- Stats Overview Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <!-- Total Tasks Card -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center">
-                <h4 class="text-xl font-semibold text-white mb-2">Total Tasks</h4>
-                <p class="text-3xl text-blue-500 font-bold">{{ $totalTasks }}</p>
-            </div>
-
-            <!-- Completed Tasks Card -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center">
-                <h4 class="text-xl font-semibold text-white mb-2">Completed Tasks</h4>
-                <p class="text-3xl text-green-500 font-bold">{{ $completedTasks }}</p>
-            </div>
-
-            <!-- Pending Tasks Card -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center">
-                <h4 class="text-xl font-semibold text-white mb-2">Pending Tasks</h4>
-                <p class="text-3xl text-orange-500 font-bold">{{ $pendingTasks }}</p>
-            </div>
-
-            <!-- Canceled Tasks Card -->
-            <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center">
-                <h4 class="text-xl font-semibold text-white mb-2">Canceled Tasks</h4>
-                <p class="text-3xl text-red-500 font-bold">{{ $canceledTasks }}</p>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            @foreach ([
+                ['Total Tasks', $totalTasks, 'blue-500'],
+                ['Completed Tasks', $completedTasks, 'green-500'],
+                ['Pending Tasks', $pendingTasks, 'orange-500'],
+                ['Canceled Tasks', $canceledTasks, 'red-500'],
+            ] as [$title, $count, $color])
+                <div class="bg-gray-800 p-6 rounded-lg shadow-xl text-center transition transform hover:scale-105">
+                    <h4 class="text-xl font-semibold text-white mb-2">{{ $title }}</h4>
+                    <p class="text-3xl text-{{ $color }} font-bold">{{ $count }}</p>
+                </div>
+            @endforeach
         </div>
 
         <!-- Quick Access Links -->
         <div class="bg-gray-900 rounded-lg shadow-xl p-6 mb-8">
-            <h4 class="text-xl font-semibold text-white mb-4">Quick Access</h4>
-            <div class="grid grid-cols-2 gap-4">
-                <a href="{{ route('tasks.index') }}" class="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-150">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7h7m-7-14h7"></path>
-                    </svg>
-                    View Task List
-                </a>
-                <a href="{{ route('tasks.create') }}" class="flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-150">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    Create New Task
-                </a>
-                <a href="{{ route('profile.edit') }}" class="flex items-center bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold py-2 px-4 rounded-md shadow-md transition duration-150">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 7.232a4 4 0 11-5.664 5.664M4.6 20.6a4.992 4.992 0 00-.6-1.294M16.6 20.6a4.992 4.992 0 00.6-1.294"></path>
-                    </svg>
-                    Manage Profile
-                </a>
-                <a href="{{ route('activity-logs.index') }}" class="flex items-center bg-purple-500 hover:bg-purple-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-150">
-                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-4h6v4m-6-6h6V7H9v4z"></path>
-                    </svg>
-                    View Activity Logs
-                </a>
+            <h4 class="text-2xl font-semibold text-white mb-4">Quick Access</h4>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                @foreach ([
+                    ['tasks.index', 'View Task List', 'blue-500', 'M5 12h14m-7 7h7m-7-14h7'],
+                    ['tasks.create', 'Create New Task', 'green-500', 'M12 4v16m8-8H4'],
+                    ['profile.edit', 'Manage Profile', 'yellow-500', 'M15.232 7.232a4 4 0 11-5.664 5.664M4.6 20.6a4.992 4.992 0 00-.6-1.294M16.6 20.6a4.992 4.992 0 00.6-1.294'],
+                    ['activity-logs.index', 'View Activity Logs', 'purple-500', 'M9 17v-4h6v4m-6-6h6V7H9v4z']
+                ] as [$route, $text, $color, $iconPath])
+                    <a href="{{ route($route) }}" class="flex items-center bg-{{ $color }} hover:bg-{{ $color }}-600 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-150">
+                        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $iconPath }}"></path>
+                        </svg>
+                        {{ $text }}
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Task Progress Bar -->
+        <div class="bg-gray-900 rounded-lg shadow-xl p-6 mb-8">
+            <h4 class="text-2xl font-semibold text-white mb-4">Task Progress</h4>
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-white">Completed Tasks</span>
+                <span class="text-white font-semibold">{{ $completedTasks }} / {{ $totalTasks }}</span>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-3">
+                <div class="bg-green-500 h-3 rounded-full" style="width: {{ ($completedTasks / $totalTasks) * 100 }}%"></div>
             </div>
         </div>
     </div>
