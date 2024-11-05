@@ -8,9 +8,7 @@
     <div class="max-w-4xl mx-auto mt-8 p-6 bg-gray-800 shadow-lg rounded-lg">
 
         @if (session('success'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
-                <span class="block sm:inline">{{ session('success') }}</span>
-            </div>
+            <x-alert-success />
         @endif
 
         <h1 class="text-2xl font-semibold text-white mb-6">Create New Task</h1>
@@ -50,7 +48,7 @@
                         @endif
                     @endforeach
                 </select>
-            </div>            
+            </div>
             <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 rounded-md font-semibold shadow-md">Create Task</button>
         </form>
     </div>

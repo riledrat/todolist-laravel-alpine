@@ -16,7 +16,7 @@
             'status',
             'assigned_to',
         ];
-        
+
         public function assignedUser()
         {
             return $this->belongsTo(User::class, 'assigned_to');

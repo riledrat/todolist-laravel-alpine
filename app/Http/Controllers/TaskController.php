@@ -1,14 +1,10 @@
 <?php
+    declare(strict_types=1);
 
     namespace App\Http\Controllers;
 
-    use App\Events\TaskAssigned;
     use App\Models\Task;
     use App\Models\ActivityLog;
-    use App\Models\User;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Auth;
-    use Illuminate\Support\Facades\Log;
 
     class TaskController extends Controller
     {
@@ -16,20 +12,20 @@
 
         public function __construct()
         {
-            $this->userId = Auth::id();
+            $this->userId = \Illuminate\Support\Facades\Auth::id();
         }
 
-        public function index(Request $request): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
+        public function index(\Illuminate\Http\Request $request): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
         {
             $query = Task::with(['assignedUser', 'user'])
                 ->where('assigned_to', $this->userId)
                 ->orWhere('user_id', $this->userId);
 
             if ($request->filled('name')) {
-                $query->where('name', 'like', '%' . $request->name . '%');
+                $query->where('name', 'like', '%' . $request->input('name') . '%');
             }
             if ($request->filled('priority')) {
-                $query->where('priority', $request->priority);
+                $query->where('priority', $request->input('priority'));
             }
 
             $tasks = $query->get();
@@ -37,54 +33,40 @@
             return view('tasks.index', compact('tasks'));
         }
 
-        public function create()
+        public function create(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
         {
-            $users = User::all();
+            $users = \App\Models\User::all();
             return view('tasks.create', compact('users'));
         }
 
-        public function store(Request $request)
+        public function store(\App\Http\Requests\StoreTaskRequest $request): \Illuminate\Http\RedirectResponse
         {
-            $request->validate([
-                'name' => 'required',
-                'priority' => 'required',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
-            ]);
-
             $assignedTo = $request->input('assigned_to') ?? $this->userId;
 
             $task = Task::create([
-                'name' => $request->name,
-                'description' => $request->description,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'start_date' => $request->input('start_date'),
+                'end_date' => $request->input('end_date'),
                 'user_id' => $this->userId,
                 'assigned_to' => $assignedTo,
-                'priority' => $request->priority,
+                'priority' => $request->input('priority'),
             ]);
 
-            Log::info('Pokretanje eventa TaskAssigned');
-            event(new TaskAssigned($task->name, $assignedTo)); // Prosledi korisnika kome je zadatak dodeljen
+            \Illuminate\Support\Facades\Log::info('Starting TaskAssigned Event.');
+            event(new \App\Events\TaskAssigned($task->name, $assignedTo));
 
             return redirect()->route('tasks.index')->with('success', 'Task created successfully.');
         }
 
 
-        public function edit(Task $task)
+        public function edit(Task $task): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
         {
             return view('tasks.edit', compact('task'));
         }
 
-        public function update(Request $request, Task $task)
+        public function update(\App\Http\Requests\UpdateTaskRequest $request, Task $task): \Illuminate\Http\RedirectResponse
         {
-            $request->validate([
-                'name' => 'required',
-                'priority' => 'required',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after_or_equal:start_date',
-            ]);
-
             $task->update($request->all());
 
             ActivityLog::create([
@@ -95,7 +77,7 @@
             return redirect()->route('tasks.index')->with('success', 'Task updated successfully.');
         }
 
-        public function destroy(Task $task)
+        public function destroy(Task $task): \Illuminate\Http\RedirectResponse
         {
             $task->delete();
 
@@ -107,7 +89,7 @@
             return redirect()->route('tasks.index')->with('success', 'Task deleted successfully.');
         }
 
-        public function complete(Task $task)
+        public function complete(Task $task): \Illuminate\Http\RedirectResponse
         {
             $task->update(['status' => 'Completed']);
 
@@ -119,7 +101,7 @@
             return redirect()->route('tasks.index')->with('success', 'Task marked as completed.');
         }
 
-        public function cancel(Task $task)
+        public function cancel(Task $task): \Illuminate\Http\RedirectResponse
         {
             $task->update(['status' => 'Canceled']);
 
@@ -131,13 +113,13 @@
             return redirect()->route('tasks.index')->with('success', 'Task has been canceled.');
         }
 
-        public function completedTasks()
+        public function completedTasks(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
         {
             $tasks = Task::where('status', 'Completed')->where('user_id', $this->userId)->get();
             return view('tasks.completed', compact('tasks'));
         }
 
-        public function canceledTasks()
+        public function canceledTasks(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
         {
             $tasks = Task::where('status', 'Canceled')->where('user_id', $this->userId)->get();
             return view('tasks.canceled', compact('tasks'));

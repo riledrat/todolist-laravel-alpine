@@ -1,16 +1,14 @@
 <?php
 
+    declare(strict_types=1);
+
     namespace App\Events;
 
-    use Illuminate\Broadcasting\Channel;
-    use Illuminate\Broadcasting\InteractsWithSockets;
-    use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-    use Illuminate\Foundation\Events\Dispatchable;
-    use Illuminate\Queue\SerializesModels;
-
-    class TaskAssigned implements ShouldBroadcast
+    class TaskAssigned implements \Illuminate\Contracts\Broadcasting\ShouldBroadcastNow
     {
-        use Dispatchable, InteractsWithSockets, SerializesModels;
+        use \Illuminate\Foundation\Events\Dispatchable;
+        use \Illuminate\Broadcasting\InteractsWithSockets;
+        use \Illuminate\Queue\SerializesModels;
 
         public $name;
         public $assignedTo;
@@ -24,11 +22,11 @@
         public function broadcastOn(): array
         {
             return [
-                new Channel('todolist-laravel-alpine-channel.' . $this->assignedTo), // Korisnik koji dobija zadatak
+                new \Illuminate\Broadcasting\Channel('todolist-laravel-alpine-channel.' . $this->assignedTo),
             ];
         }
 
-        public function broadcastAs()
+        public function broadcastAs(): string
         {
             return 'assigned-task';
         }
