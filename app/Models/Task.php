@@ -2,9 +2,7 @@
 
     namespace App\Models;
 
-    use Illuminate\Database\Eloquent\Model;
-
-    class Task extends Model
+    class Task extends \Illuminate\Database\Eloquent\Model
     {
         protected $fillable = [
             'name',
@@ -17,13 +15,12 @@
             'assigned_to',
         ];
 
-        public function assignedUser()
+        public function assignedUser(): \Illuminate\Database\Eloquent\Relations\BelongsTo
         {
             return $this->belongsTo(User::class, 'assigned_to');
         }
 
-        // In Task.php model
-        public function user()
+        public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
         {
             return $this->belongsTo(User::class, 'user_id');
         }

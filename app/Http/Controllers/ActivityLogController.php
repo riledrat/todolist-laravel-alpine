@@ -2,21 +2,17 @@
 
     namespace App\Http\Controllers;
 
-    use App\Models\ActivityLog;
-    use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\Auth;
-
     class ActivityLogController extends Controller
     {
-        public function index()
+        public function index(): \Illuminate\Contracts\View\View|\Illuminate\Contracts\View\Factory|\Illuminate\Foundation\Application
         {
-            $recentActivities = ActivityLog::where('user_id', Auth::id())->latest()->take(5)->get();
+            $recentActivities = \App\Models\ActivityLog::where('user_id', \Illuminate\Support\Facades\Auth::id())->latest()->take(5)->get();
             return view('activity-logs.index', compact('recentActivities'));
         }
 
-        public function clear()
+        public function clear(): \Illuminate\Http\RedirectResponse
         {
-            ActivityLog::where('user_id', Auth::id())->delete();
+            \App\Models\ActivityLog::where('user_id', \Illuminate\Support\Facades\Auth::id())->delete();
 
             return redirect()->back()->with('success', 'Your activity logs have been cleared.');
         }
