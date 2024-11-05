@@ -9,6 +9,6 @@
         @if (session('success'))
             <x-alert-success />
         @endif
-        <x-task-table :tasks="$tasks" showStatus="true" showAssignedTo="true" showAssignedBy="true" />
+        <x-task-table :tasks="$tasks" />
     </div>
 </x-app-layout>

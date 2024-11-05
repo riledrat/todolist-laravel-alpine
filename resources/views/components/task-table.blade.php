@@ -1,6 +1,6 @@
 @props(['tasks'])
 
-<table class="min-w-full bg-gray-900 rounded-lg">
+<table class="min-w-full bg-gray-900 rounded-lg overflow-hidden">
     <thead>
     <tr>
         @foreach (['Name', 'Description', 'Start Date', 'End Date', 'Priority', 'Status', 'Assigned To', 'Assigned By', 'Actions'] as $header)
@@ -10,7 +10,7 @@
     </thead>
     <tbody>
     @foreach($tasks as $task)
-        <tr class="border-b border-gray-600">
+        <tr class="border-b border-gray-600 hover:bg-gray-800 transition duration-200 ease-in-out">
             @foreach ([
                 $task->name,
                 $task->description,
@@ -23,7 +23,11 @@
             ] as $value)
                 <td class="py-4 px-6 text-center {{ is_string($value) ? 'text-gray-300' : '' }}">
                     @if (in_array($value, [$task->priority, $task->status]))
-                        <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full {{ $value === 'Critical' ? 'bg-red-500 text-white' : ($value === 'Minor' ? 'bg-yellow-500 text-black' : ($value === 'Completed' ? 'bg-green-500 text-white' : ($value === 'Canceled' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'))) }}">
+                        <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-full {{
+                            $value === 'Critical' ? 'bg-red-500 text-white' :
+                            ($value === 'Minor' ? 'bg-yellow-500 text-black' :
+                            ($value === 'Completed' ? 'bg-green-500 text-white' :
+                            ($value === 'Canceled' ? 'bg-red-500 text-white' : 'bg-gray-500 text-white'))) }}">
                                 {{ $value }}
                         </span>
                     @else
